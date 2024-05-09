@@ -2,16 +2,19 @@ import React, { useState,useRef } from 'react';
 import { DatePicker, Select, Button, Alert, Divider } from 'antd';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend,BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
 import moment from 'moment'; // Ensure moment is installed for date manipulation
+import { useLocation } from 'react-router-dom'
 import './Analysis.css';
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
 
 const AnalysisPage = () => {
+  const location = useLocation();
   const [dates, setDates] = useState([]);
   const [selectedLocation, setSelectedLocation] = useState('');
    const [chartType, setChartType] = useState('line');
   const [data, setData] = useState([]);
+  const data1 =location.state?.data;
   const [analysisResult, setAnalysisResult] = useState('');
   const [error, setError] = useState('');
   const lineChartRef = useRef(null);
@@ -40,7 +43,6 @@ const AnalysisPage = () => {
       const canvas = document.createElement("canvas");
       const ctx = canvas.getContext("2d");
       const img = new Image();
-  
       img.onload = function() {
         canvas.width = img.width;
         canvas.height = img.height;
@@ -107,7 +109,9 @@ const AnalysisPage = () => {
               <div className="pie-charts-container">
                 <PieChart ref={pieChartRef} width={300} height={300}>
                   <Pie data={pieDataSeaLevel} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={100} fill="#8884d8" label>
+                  <Cell key={`cell-0`} fill="#8884d8" />
                     <Tooltip />
+                    <Legend />
                   </Pie>
                 </PieChart>
                 <PieChart ref={pieChartRef} width={300} height={300}>

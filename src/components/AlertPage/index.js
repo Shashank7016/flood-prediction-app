@@ -8,6 +8,7 @@ import {
   Alert as AntdAlert,
   Divider,
   Typography,
+  notification
 } from 'antd';
 import './alertpage.css';
 const { Title } = Typography;
@@ -24,10 +25,25 @@ const AlertComponent = () => {
   const [isAlertSubmitted, setIsAlertSubmitted] = useState(false);
 
   const onFinish = (values) => {
-    // Handle form submission (e.g., send data to an API)
     console.log('Success:', values);
-    setIsAlertSubmitted(true);
-  };
+    notification.open({
+        message: 'Alert Submitted',
+        description: (
+            <>
+                <p><strong>Severity:</strong> {values.severity}</p>
+                <p><strong>Location:</strong> {values.location}</p>
+                <p><strong>Message:</strong> {values.message}</p>
+                {values.additionalNotes && <p><strong>Additional Notes:</strong> {values.additionalNotes}</p>}
+                {values.affectedAreas && <p><strong>Affected Areas:</strong> {values.affectedAreas}</p>}
+            </>
+        ),
+        placement: 'bottomRight',
+        type: 'success',
+        duration: 0,  // Optional: set to 0 to make it stay until clicked away
+        onClose: () => console.log('Notification Closed!')
+    });
+};
+
 
   const onFinishFailed = (errorInfo) => {
     console.log('Failed:', errorInfo);
