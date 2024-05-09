@@ -10,6 +10,7 @@ import {
   Typography,
 } from 'antd';
 import './alertpage.css';
+import axios from 'axios';
 const { Title } = Typography;
 const { Option } = Select;
 
@@ -22,11 +23,22 @@ const AlertComponent = () => {
   });
 
   const [isAlertSubmitted, setIsAlertSubmitted] = useState(false);
+  const [isError, setIsError] = useState(false);
 
-  const onFinish = (values) => {
+  const onFinish = async (values) => {
     // Handle form submission (e.g., send data to an API)
+    try {
+      const response = await axios.post('http://localhost:3000/alerts', values);
+      console.log('Success:', response.data);
+      setIsAlertSubmitted(true);
+      setIsError(false);
+    } catch (error) {
+      console.log('Error:', error);
+      setIsAlertSubmitted(true);
+      setIsError(true);
+    }
     console.log('Success:', values);
-    setIsAlertSubmitted(true);
+    // setIsAlertSubmitted(true);
   };
 
   const onFinishFailed = (errorInfo) => {
@@ -37,11 +49,20 @@ const AlertComponent = () => {
   return (
     <div className='form-container'>
       <>
-        {isAlertSubmitted && (
+        {isAlertSubmitted && !isError && (
           <AntdAlert
             message='Alert Submitted'
             description='Your alert has been successfully submitted.'
             type='success'
+            showIcon
+            closable
+          />
+        )}
+        {isAlertSubmitted && isError && (
+          <AntdAlert
+            message='Alert Request Failed'
+            description='Failed to Complete this Request'
+            type='error'
             showIcon
             closable
           />

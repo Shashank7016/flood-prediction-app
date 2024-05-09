@@ -5,12 +5,14 @@ import FAQ from './components/FAQ';
 import DataPage from './components/DataPage';
 import AnalysisPage from './components/AnalysisPage';
 import AlertPage from './components/AlertPage';
+import Home from './components/HomePage';
 
 function App() {
   return (
     <div>
       <Navbar />
       <Routes>
+        <Route path='/' element={<Home />} />
         <Route path='/faq' element={<FAQ />} />
         <Route path='/data' element={<DataPage />} />
         <Route path='/analysis' element={<AnalysisPage />} />
