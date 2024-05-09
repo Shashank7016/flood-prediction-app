@@ -45,6 +45,11 @@ const faqData = [
         question: "Once the floodwaters recede, what steps should I take to assess damage and begin the recovery process?",
         answer: "Assess the damage to your property and prioritize cleanup and repairs. Document the damage with photographs or videos for insurance claims and assistance applications."
       },
+      {
+        question: "How can pesticides be used effectively to control pests and vectors following a flood, and what precautions should I take when using them??",
+        answer: 
+        "- Take precautions to minimize exposure to pesticides, such as wearing protective clothing and using proper ventilation during application."
+      },
     ]
   }
 ];
