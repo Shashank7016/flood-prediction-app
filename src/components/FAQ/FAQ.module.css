@@ -1,21 +1,61 @@
+body {
+  background-color: #f0f0f0; /* Set your desired background color */
+}
+
+.faq-centering-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh; /* Use min-height instead of height */
+}
+
 .faq-container {
-    margin: 30px;
-    font-family: 'Arial', sans-serif;
-  }
-  
-  h2 {
-    color: #0056b3;  /* A nice shade of blue */
-    margin-bottom: 10px;
-  }
-  
-  .ant-collapse-header {
-    font-size: 16px;
-    font-weight: bold;
-  }
-  
-  .ant-collapse-content p {
-    font-size: 14px;
-    line-height: 1.5;
-  }
-  
-  
+  width: 80%; /* Adjust the width as needed */
+  max-width: 800px; /* Adjust the max-width as needed */
+  margin: auto; /* Centers the container horizontally */
+  font-family: 'Arial', sans-serif;
+  background-color: #fff; /* Set background color for the container */
+  padding: 20px; /* Add padding for better appearance */
+  border-radius: 8px; /* Add border radius for rounded corners */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Add box shadow for depth */
+}
+
+/* Set different background color for the content section */
+.content-section {
+  background-color: #f9f9f9; /* Set your desired background color */
+  padding: 20px; /* Add padding for better appearance */
+  border-radius: 8px; /* Add border radius for rounded corners */
+}
+
+h1 {
+  color: #3f8cf1; /* A nice shade of blue */
+  margin-bottom: 10px;
+}
+
+h2 {
+  color: #287ef0; /* A nice shade of blue */
+  margin-bottom: 10px;
+}
+
+p {
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.ant-collapse-header {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.ant-collapse-content p {
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.faq-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 40px; /* Adjust spacing between sections */
+}
