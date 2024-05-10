@@ -9,6 +9,10 @@ const Navbar = () => {
       key: 'home',
     },
     {
+      label: <Link to='/users'>Users</Link>,
+      key: 'users',
+    },
+    {
       label: <Link to='/data'>Data</Link>,
       key: 'data',
     },
