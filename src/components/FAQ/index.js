@@ -1,104 +1,69 @@
-import React, { useState } from 'react';
-import { Collapse, Input } from 'antd';
-import './FAQ.module.css'; // Import the CSS module for styling
+import React from 'react';
+import { Collapse } from 'antd';
+import './Chatbot.css';  // Import the CSS module for styling
 import ChatBot from './ChatBot';
 const { Panel } = Collapse;
-const { Search } = Input;
 
 const faqData = [
   {
     title: "Pre-Flood FAQs",
     faqs: [
       {
-        question: "What should I do to prepare for a flood?",
-        answer: "To prepare for a flood, you should create an emergency kit, develop an evacuation plan, and secure your property by elevating valuables and sealing entry points."
+        question: "How can I stay informed about potential floods and take preventive measures before they occur?",
+        answer: "Stay informed by monitoring weather forecasts and flood warnings from local authorities. Take preventive measures such as installing flood barriers, sealing basement walls, and elevating electrical appliances."
       },
       {
-        question: "Is flood insurance necessary?",
-        answer: "Flood insurance is highly recommended, especially if you live in a flood-prone area. It can help protect your property and belongings in case of flood damage."
-      }
+        question: "What actions should I take before a flood to prepare my home and ensure the safety of my family?",
+        answer: "Develop a family emergency plan that includes evacuation routes, designated meeting points, and contact information for local authorities. Prepare an emergency kit with essential items such as non-perishable food, water, medications, flashlights, batteries, and important documents."
+      },
+      {
+        question: "Are there any evacuation routes or shelters designated in my area, and how can I access this information?",
+        answer: "Contact local authorities or emergency management agencies to inquire about designated evacuation routes and shelters in your area. Familiarize yourself with evacuation routes and shelter locations to ensure a safe evacuation if necessary."
+      },
+      {
+        question: "Should I consider purchasing flood insurance, and where can I find information about coverage options?",
+        answer: "Consider purchasing flood insurance to protect your property from flood-related damages. You can obtain information about coverage options from insurance providers or through the National Flood Insurance Program (NFIP)."
+      },
+      // Include other FAQs similarly
     ]
   },
   {
     title: "During-Flood FAQs",
     faqs: [
+      // Define during-flood FAQs
       {
-        question: "What should I do if a flood occurs while I'm at home?",
-        answer: "If a flood occurs while you're at home, prioritize your safety. Move to higher ground if possible, and avoid walking or driving through floodwaters."
+        question: "What should I do if a flood occurs while I'm at home, and how can I ensure my safety?",
+        answer: "Stay calm and prioritize your safety. If necessary, evacuate to higher ground or the highest level of your home. Avoid walking or driving through floodwaters, as they may be deeper or faster-moving than they appear."
       },
-      {
-        question: "How can I stay informed during a flood?",
-        answer: "Stay tuned to local news and weather updates for flood warnings and evacuation orders. Follow the instructions of emergency services and evacuate if necessary."
-      }
     ]
   },
   {
     title: "Post-Flood FAQs",
     faqs: [
+      // Define post-flood FAQs
       {
-        question: "What should I do after a flood?",
-        answer: "After a flood, assess the damage to your property and prioritize safety. Document the damage for insurance claims, and begin cleanup and restoration efforts."
+        question: "Once the floodwaters recede, what steps should I take to assess damage and begin the recovery process?",
+        answer: "Assess the damage to your property and prioritize cleanup and repairs. Document the damage with photographs or videos for insurance claims and assistance applications."
       },
-      {
-        question: "Is it safe to enter a flooded area after the water recedes?",
-        answer: "It's important to wait until authorities declare the area safe before returning. Floodwaters can contain contaminants and pose health risks."
-      }
     ]
   }
 ];
 
 const FAQ = () => {
-  const [searchText, setSearchText] = useState('');
-
-  const onSearch = value => {
-    setSearchText(value);
-  };
-
-  let filteredFAQs = faqData.flatMap(section =>
-    section.title.toLowerCase().includes(searchText.toLowerCase()) ? section.faqs : []
-  );
-
   return (
-    <div className="faq-centering-wrapper">
-      <div className="faq-container">
-        <div style={{ marginBottom: '20px' }}>
-          <h1>Frequently Asked Questions</h1>
-          <p>Here are responses to common questions, covering various topics including the industries we serve and the locations we provide coverage in.</p>
+    <div className="faq-container">
+      {faqData.map((section, index) => (
+        <div key={index}>
+          <h2>{section.title}</h2>
+          <Collapse accordion>
+            {section.faqs.map((faq, idx) => (
+              <Panel header={faq.question} key={idx}>
+                <p>{faq.answer}</p>
+              </Panel>
+            ))}
+          </Collapse>
         </div>
-        <h2>For the Flood App</h2>
-        <Search
-          placeholder="Search for a question"
-          allowClear
-          onSearch={onSearch}
-          style={{ width: 300, marginBottom: 20 }}
-        />
-        
-        {searchText === '' ? (
-          faqData.map((section, index) => (
-            <div key={index} className="faq-section">
-              <h2>{section.title}</h2>
-              <Collapse accordion>
-                {section.faqs.map((faq, idx) => (
-                  <Panel header={faq.question} key={idx}>
-                    <p>{faq.answer}</p>
-                  </Panel>
-                ))}
-              </Collapse>
-            </div>
-          ))
-        ) : (
-          <div className="faq-section">
-            <h2>{searchText}</h2>
-            <Collapse accordion>
-              {filteredFAQs.map((faq, idx) => (
-                <Panel header={faq.question} key={idx}>
-                  <p>{faq.answer}</p>
-                </Panel>
-              ))}
-            </Collapse>
-          </div>
-        )}
-      </div>
+      ))}
       <ChatBot />
     </div>
   );
