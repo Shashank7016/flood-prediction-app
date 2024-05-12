@@ -28,6 +28,10 @@ const Navbar = () => {
       label: <Link to='/alerts'>Alerts</Link>,
       key: 'alerts',
     },
+    {
+      label: <Link to='/evacuation'>Evacuation</Link>,
+      key: 'evacuation',
+    },
   ];
 
   return <Menu mode='horizontal' items={items} />;

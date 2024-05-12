@@ -5,7 +5,9 @@ import FAQ from './components/FAQ';
 import DataPage from './components/DataPage';
 import AnalysisPage from './components/AnalysisPage';
 import AlertPage from './components/AlertPage';
-import UsersPage from './components/UsersPage'
+import UsersPage from './components/UsersPage';
+import Home from './components/HomePage';
+import EvacuationComponent from './components/Evacuation';
 function App() {
   return (
     <div>
@@ -17,6 +19,7 @@ function App() {
         <Route path='/analysis' element={<AnalysisPage />} />
         <Route path='/alerts' element={<AlertPage />} />
         <Route path='/users' element={<UsersPage />} />
+        <Route path='/evacuation' element={<EvacuationComponent />} />
         // Add more routes as needed
       </Routes>
     </div>
