@@ -76,6 +76,7 @@ const FloodPredictionForm = () => {
       onFinish={onFinish}
       onFinishFailed={onFinishFailed}
       layout='vertical'
+      style={{ width: '80%', margin: '0 auto', paddingBottom: '50px' }}
     >
       <Row gutter={16}>
         <Col span={12}>

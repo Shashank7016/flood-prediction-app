@@ -227,12 +227,22 @@ const AnalysisPage = () => {
 
   return (
     <div>
-      <h1>Flood Analysis</h1>
-      <div style={{ display: 'flex', marginBottom: 20, alignItems: 'center' }}>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          width: '80%',
+          margin: '0 auto',
+          paddingBottom: '20px',
+          paddingTop: '30px',
+        }}
+      >
+        <h2 style={{ display: 'block', width: '100%' }}>Flood Analysis</h2>
+
         {/* <RangePicker onChange={handleDateRangeChange} /> */}
         <Select
           defaultValue='logistic_regression'
-          style={{ width: 200, marginLeft: 20 }}
+          style={{ width: 200 }}
           onChange={(value) => setAlgorithm(value)}
         >
           <Option value='logistic_regression'>Logistic Regression</Option>
