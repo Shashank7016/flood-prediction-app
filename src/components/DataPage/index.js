@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { Table, Select, DatePicker, Button, Alert } from 'antd';
-
+import { useNavigate } from 'react-router-dom';
 const { Option } = Select;
 
 const DataPage = () => {
+  const navigate = useNavigate();
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [data, setData] = useState([]);
@@ -45,6 +46,13 @@ const DataPage = () => {
       ]);
     }
   };
+  const visualizeData = () => {
+    if (!data.length) {
+      setError('No data to visualize. Please fetch data first.');
+    } else {
+      navigate('/analysis', { state: { data } });
+    }
+  };
 
   return (
     <div>
@@ -56,6 +64,8 @@ const DataPage = () => {
           <Option value="Location2">Location2</Option>
         </Select>
         <Button type="primary" onClick={fetchData} style={{ marginLeft: 'auto' }}>Go</Button>
+        <Button onClick={visualizeData} style={{ marginLeft: 20 }}>Visualize Data</Button>
+        {error && <Alert message={error} type="error" />}
       </div>
       {error && <Alert message={error} type="error" showIcon />}
       <Table columns={columns} dataSource={data} />
