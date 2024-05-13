@@ -1,20 +1,28 @@
+
 .faq-container {
+  justify-content: center;
+  display: flex;
+  align-items: center;
   margin: 20px;
   font-family: 'Arial', sans-serif;
 }
 
-h2 {
-  color: #0056b3;  /* A nice shade of blue */
+h1 {
+  color: #0330ab;  /* A nice shade of blue */
   margin-bottom: 10px;
 }
 
+h2 {
+  color: #0269d7;  /* A nice shade of blue */
+  margin-bottom: 20px; /* Increased margin between titles */
+}
+
 .ant-collapse-header {
-  font-size: 16px;
+  font-size: 20px;
   font-weight: bold;
 }
 
 .ant-collapse-content p {
-  font-size: 14px;
+  font-size: 20px;
   line-height: 1.5;
 }
-
