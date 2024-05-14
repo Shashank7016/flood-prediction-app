@@ -104,7 +104,13 @@ const MarkerMap = () => {
               position={[marker.latitude, marker.longitude]}
               icon={safeZoneMarker}
             >
-              <Popup>{marker.zoneName}</Popup>
+              <Popup>
+                <div>
+                  <h2>{marker.zoneName}</h2>
+                  <p>Capacity - {marker.capacity}</p>
+                  <p>Current Occupancy - {marker.currentOccupancy}</p>
+                </div>
+              </Popup>
             </Marker>
           </>
         ))}

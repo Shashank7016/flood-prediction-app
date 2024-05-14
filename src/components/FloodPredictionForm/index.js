@@ -25,7 +25,21 @@ const FloodPredictionForm = () => {
     axios
       .post('http://localhost:4000/ml/svm', values)
       .then((response) => {
-        console.log(response.data);
+        console.log('Response Data', response.data);
+        console.log('Form Data', values);
+        const formedObject = { ...values, predicted: response.data };
+        console.log('Formed Object', formedObject);
+        axios
+          .post(
+            'http://localhost:4000/predictions/createPredictions',
+            formedObject
+          )
+          .then((response) => {
+            console.log('Response Data', response.data);
+          })
+          .catch((error) => {
+            console.error('There was an error!', error);
+          });
         message.success('Form submitted successfully!');
       })
       .catch((error) => {
@@ -76,6 +90,7 @@ const FloodPredictionForm = () => {
       onFinish={onFinish}
       onFinishFailed={onFinishFailed}
       layout='vertical'
+      style={{ width: '80%', margin: '0 auto', paddingBottom: '50px' }}
     >
       <Row gutter={16}>
         <Col span={12}>
