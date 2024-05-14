@@ -29,36 +29,22 @@ const AlertComponent = () => {
   const onFinish = (values) => {
     console.log('Success:', values);
     notification.open({
-      message: 'Alert Submitted',
-      description: (
-        <>
-          <p>
-            <strong>Severity:</strong> {values.severity}
-          </p>
-          <p>
-            <strong>Location:</strong> {values.location}
-          </p>
-          <p>
-            <strong>Message:</strong> {values.message}
-          </p>
-          {values.additionalNotes && (
-            <p>
-              <strong>Additional Notes:</strong> {values.additionalNotes}
-            </p>
-          )}
-          {values.affectedAreas && (
-            <p>
-              <strong>Affected Areas:</strong> {values.affectedAreas}
-            </p>
-          )}
-        </>
-      ),
-      placement: 'bottomRight',
-      type: 'success',
-      duration: 0, // Optional: set to 0 to make it stay until clicked away
-      onClose: () => console.log('Notification Closed!'),
+        message: 'Alert Submitted',
+        description: (
+            <>
+                <p><strong>Severity:</strong> {values.severity}</p>
+                <p><strong>Location:</strong> {values.location}</p>
+                <p><strong>Message:</strong> {values.message}</p>
+                {values.additionalNotes && <p><strong>Additional Notes:</strong> {values.additionalNotes}</p>}
+                {values.affectedAreas && <p><strong>Affected Areas:</strong> {values.affectedAreas}</p>}
+            </>
+        ),
+        placement: 'bottomRight',
+        type: 'success',
+        duration: 0,  // Optional: set to 0 to make it stay until clicked away
+        onClose: () => console.log('Notification Closed!')
     });
-  };
+};
 
   const onFinishFailed = (errorInfo) => {
     console.log('Failed:', errorInfo);
