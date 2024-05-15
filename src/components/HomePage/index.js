@@ -18,7 +18,7 @@ export default function HomePage() {
     getAlerts();
   }, []);
   return (
-    <div>
+    <div style={{ margin: '0 auto', width: '80%', marginTop: '30px' }}>
       <Title level={3}>Welcome to Flood Management System</Title>
       <MarkerMap />
       <AlertList alertsData={alerts} />

@@ -98,22 +98,19 @@ const AnalysisPage = () => {
             height={300}
             data={chartData}
             ref={lineChartRef}
+            style={{ margin: '0 auto' }}
           >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" />
+            <CartesianGrid strokeDasharray='3 3' />
+            <XAxis dataKey='name' />
             <YAxis />
             <Tooltip />
             <Legend />
-            <Line
-              type="monotone"
-              dataKey="value"
-              stroke="#8884d8"
-            >
+            <Line type='monotone' dataKey='value' stroke='#8884d8'>
               {chartData.map((entry) => (
                 <Line
                   key={entry.name}
-                  type="monotone"
-                  dataKey="value"
+                  type='monotone'
+                  dataKey='value'
                   data={[entry]}
                   stroke={entry.color}
                 />
@@ -127,41 +124,41 @@ const AnalysisPage = () => {
             width={600}
             height={300}
             data={chartData}
+            style={{ margin: '0 auto' }}
             ref={barChartRef}
           >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" />
+            <CartesianGrid strokeDasharray='3 3' />
+            <XAxis dataKey='name' />
             <YAxis />
             <Tooltip />
             <Legend />
-            <Bar dataKey="value">
+            <Bar dataKey='value'>
               {chartData.map((entry) => (
-                <Cell
-                  key={entry.name}
-                  fill={entry.color}
-                />
+                <Cell key={entry.name} fill={entry.color} />
               ))}
             </Bar>
           </BarChart>
         );
       case 'pie':
         return (
-          <PieChart width={300} height={300} ref={pieChartRef}>
+          <PieChart
+            width={300}
+            height={300}
+            style={{ margin: '0 auto' }}
+            ref={pieChartRef}
+          >
             <Pie
               data={chartData}
-              dataKey="value"
-              nameKey="name"
-              cx="50%"
-              cy="50%"
+              dataKey='value'
+              nameKey='name'
+              cx='50%'
+              cy='50%'
               outerRadius={100}
-              fill="#8884d8"
+              fill='#8884d8'
               label
             >
               {chartData.map((entry) => (
-                <Cell
-                  key={entry.name}
-                  fill={entry.color}
-                />
+                <Cell key={entry.name} fill={entry.color} />
               ))}
             </Pie>
             <Tooltip />
@@ -171,7 +168,6 @@ const AnalysisPage = () => {
         return null;
     }
   };
-  
 
   const handleDateRangeChange = (dates, dateStrings) => {
     if (!dates) {
@@ -251,12 +247,9 @@ const AnalysisPage = () => {
         </Button>
       </div>
       {chartData.length > 0 && (
-                <div>
-                    {renderChart()}
-                </div>
-            )}
-      <FloodPredictionForm setChartData={setChartData}/>
-      
+        <div style={{ margin: '0 auto' }}>{renderChart()}</div>
+      )}
+      <FloodPredictionForm setChartData={setChartData} />
     </div>
   );
 };

@@ -58,7 +58,8 @@ const EvacuationComponent = () => {
         // height: '100vh',
       }}
     >
-      <div style={{ width: '60%' }}>
+      <div style={{ width: '60%', marginTop: '30px' }}>
+        <h1>Create Evacuation Zone</h1>
         <Form
           form={form}
           name='evacuationForm'

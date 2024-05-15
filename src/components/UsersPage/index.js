@@ -3,9 +3,27 @@ import { Table, Tag } from 'antd';
 
 const UsersPage = () => {
   const usersData = [
-    { key: '1', username: 'johndoe', userId: '1001', email: 'johndoe@example.com', status: 'active' },
-    { key: '2', username: 'janedoe', userId: '1002', email: 'janedoe@example.com', status: 'pending' },
-    { key: '3', username: 'foobar', userId: '1003', email: 'foobar@example.com', status: 'blocked' }
+    {
+      key: '1',
+      username: 'johndoe',
+      userId: '1001',
+      email: 'johndoe@example.com',
+      status: 'active',
+    },
+    {
+      key: '2',
+      username: 'janedoe',
+      userId: '1002',
+      email: 'janedoe@example.com',
+      status: 'pending',
+    },
+    {
+      key: '3',
+      username: 'foobar',
+      userId: '1003',
+      email: 'foobar@example.com',
+      status: 'blocked',
+    },
   ];
 
   const columns = [
@@ -16,15 +34,20 @@ const UsersPage = () => {
       title: 'Status',
       key: 'status',
       dataIndex: 'status',
-      render: status => {
-        let color = status === 'active' ? 'green' : status === 'pending' ? 'gold' : 'volcano';
+      render: (status) => {
+        let color =
+          status === 'active'
+            ? 'green'
+            : status === 'pending'
+            ? 'gold'
+            : 'volcano';
         return <Tag color={color}>{status.toUpperCase()}</Tag>;
-      }
-    }
+      },
+    },
   ];
 
   return (
-    <div>
+    <div style={{ margin: '0 auto', marginTop: '30px', width: '80%' }}>
       <h1>User List</h1>
       <Table columns={columns} dataSource={usersData} />
     </div>

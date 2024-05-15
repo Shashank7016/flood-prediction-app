@@ -1,8 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Select, DatePicker, Button, Alert, Upload, message, Checkbox } from 'antd';
+import {
+  Table,
+  Select,
+  DatePicker,
+  Button,
+  Alert,
+  Upload,
+  message,
+  Checkbox,
+} from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { InboxOutlined } from '@ant-design/icons';
 import Papa from 'papaparse';
+import './datapage.css';
 
 const { Option } = Select;
 const { Dragger } = Upload;
@@ -24,17 +34,32 @@ const DataPage = () => {
     { title: 'Location', dataIndex: 'location', key: 'location' },
     { title: 'Rainfall (inches)', dataIndex: 'rainfall', key: 'rainfall' },
     { title: 'Wind (mph)', dataIndex: 'wind', key: 'wind' },
-    { title: 'Flood Prediction', dataIndex: 'floodPrediction', key: 'floodPrediction' },
+    {
+      title: 'Flood Prediction',
+      dataIndex: 'floodPrediction',
+      key: 'floodPrediction',
+    },
   ];
+
+  const rowClass = (record) => {
+    // Example conditions:
+    console.log(record['Flood Event']);
+    if (record['Flood Event'] == 1) {
+      return 'redcolor'; // Yellow row
+    } else if (record['Flood Event'] == 0) {
+      return '';
+    }
+    return ''; // Default no styling
+  };
 
   const handleDateChange = (date, dateString) => {
     setSelectedDate(dateString);
-    setError('');  // Clear any existing errors when user selects a date
+    setError(''); // Clear any existing errors when user selects a date
   };
 
-  const handleLocationChange = value => {
+  const handleLocationChange = (value) => {
     setSelectedLocation(value);
-    setError('');  // Clear any existing errors when user selects a location
+    setError(''); // Clear any existing errors when user selects a location
   };
 
   const fetchData = () => {
@@ -48,19 +73,29 @@ const DataPage = () => {
       setError('Please select a location.');
       setData([]);
     } else {
-      setError('');  // Clear any existing errors
+      setError(''); // Clear any existing errors
       // Simulate data fetching
       const simulatedData = [
-        { key: '1', month: selectedDate.split('-')[1], year: selectedDate.split('-')[0], location: selectedLocation, rainfall: '5.4', wind: '10', floodPrediction: 'True' }
+        {
+          key: '1',
+          month: selectedDate.split('-')[1],
+          year: selectedDate.split('-')[0],
+          location: selectedLocation,
+          rainfall: '5.4',
+          wind: '10',
+          floodPrediction: 'True',
+        },
       ];
       setData(simulatedData);
       setColumns(staticColumns);
-      setAvailableColumns(staticColumns.map(col => ({
-        title: col.title,
-        dataIndex: col.dataIndex,
-        key: col.key
-      })));
-      setSelectedColumns(staticColumns.map(col => col.dataIndex));
+      setAvailableColumns(
+        staticColumns.map((col) => ({
+          title: col.title,
+          dataIndex: col.dataIndex,
+          key: col.key,
+        }))
+      );
+      setSelectedColumns(staticColumns.map((col) => col.dataIndex));
     }
   };
 
@@ -80,28 +115,32 @@ const DataPage = () => {
         const formattedData = result.data.slice(1).map((row, index) => {
           let rowData = { key: index };
           headers.forEach((header, i) => {
-            rowData[header] = row[i];
+            rowData[header] = row[i]; // Add an empty class list to the row
           });
           return rowData;
         });
 
-        setAvailableColumns(headers.map(header => ({
-          title: header,
-          dataIndex: header,
-          key: header
-        })));
+        setAvailableColumns(
+          headers.map((header) => ({
+            title: header,
+            dataIndex: header,
+            key: header,
+          }))
+        );
 
         setData(formattedData);
-        setColumns(headers.map(header => ({
-          title: header,
-          dataIndex: header,
-          key: header
-        })));
+        setColumns(
+          headers.map((header) => ({
+            title: header,
+            dataIndex: header,
+            key: header,
+          }))
+        );
         setSelectedColumns(headers);
-        setError('');  // Clear any existing errors when file is uploaded
+        setError(''); // Clear any existing errors when file is uploaded
         message.success(`${file.name} file uploaded successfully`);
       },
-      header: false
+      header: false,
     });
     return false; // Prevent automatic upload
   };
@@ -117,48 +156,70 @@ const DataPage = () => {
   };
 
   useEffect(() => {
-    setColumns(availableColumns.filter(col => selectedColumns.includes(col.dataIndex)));
+    setColumns(
+      availableColumns.filter((col) => selectedColumns.includes(col.dataIndex))
+    );
   }, [selectedColumns, availableColumns]);
 
   return (
-    <div>
+    <div style={{ margin: '0 auto', width: '80%', marginTop: '30px' }}>
       <h1>Data Overview</h1>
       <div style={{ margin: '20px 0', display: 'flex', alignItems: 'center' }}>
-        <DatePicker onChange={handleDateChange} picker="month" placeholder="Select month and year" />
-        <Select placeholder="Select a location" style={{ width: 200, marginLeft: 20 }} onChange={handleLocationChange}>
-          <Option value="Location1">Location1</Option>
-          <Option value="Location2">Location2</Option>
+        <DatePicker
+          onChange={handleDateChange}
+          picker='month'
+          placeholder='Select month and year'
+        />
+        <Select
+          placeholder='Select a location'
+          style={{ width: 200, marginLeft: 20 }}
+          onChange={handleLocationChange}
+        >
+          <Option value='Location1'>Location1</Option>
+          <Option value='Location2'>Location2</Option>
         </Select>
-        <Button type="primary" onClick={fetchData} style={{ marginLeft: 'auto' }}>Go</Button>
-        <Button onClick={visualizeData} style={{ marginLeft: 20 }}>Visualize Data</Button>
-        {error && <Alert message={error} type="error" />}
+        <Button
+          type='primary'
+          onClick={fetchData}
+          style={{ marginLeft: 'auto' }}
+        >
+          Go
+        </Button>
+        <Button onClick={visualizeData} style={{ marginLeft: 20 }}>
+          Visualize Data
+        </Button>
+        {error && <Alert message={error} type='error' />}
       </div>
       <Dragger
-        name="file"
+        name='file'
         multiple={false}
         beforeUpload={handleFileUpload}
         onRemove={removeFile}
         fileList={file ? [file] : []}
         style={{ marginBottom: 20 }}
       >
-        <p className="ant-upload-drag-icon">
+        <p className='ant-upload-drag-icon'>
           <InboxOutlined />
         </p>
-        <p className="ant-upload-text">Click or drag file to this area to upload</p>
-        <p className="ant-upload-hint">Support for a single upload. Click or drag a CSV file.</p>
+        <p className='ant-upload-text'>
+          Click or drag file to this area to upload
+        </p>
+        <p className='ant-upload-hint'>
+          Support for a single upload. Click or drag a CSV file.
+        </p>
       </Dragger>
       {availableColumns.length > 0 && (
         <div style={{ marginBottom: 20 }}>
           <h3>Select Columns to Display</h3>
           <Checkbox.Group
-            options={availableColumns.map(col => col.dataIndex)}
+            options={availableColumns.map((col) => col.dataIndex)}
             value={selectedColumns}
             onChange={setSelectedColumns}
           />
         </div>
       )}
-      {error && <Alert message={error} type="error" showIcon />}
-      <Table columns={columns} dataSource={data} />
+      {error && <Alert message={error} type='error' showIcon />}
+      <Table columns={columns} dataSource={data} rowClassName={rowClass} />
     </div>
   );
 };
