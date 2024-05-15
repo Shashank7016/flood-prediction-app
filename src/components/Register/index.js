@@ -31,8 +31,18 @@ const RegisterPage = () => {
   };
 
   return (
-    <div style={{ maxWidth: 400, margin: '0 auto' }}>
-      <h1>Register</h1>
+    <div
+      style={{
+        maxWidth: 400,
+        margin: '0 auto',
+        minHeight: '100vh',
+        paddingTop: '100px',
+        paddingBottom: '100px',
+      }}
+    >
+      <h1 style={{ textAlign: 'center', paddingBottom: '60px' }}>
+        Registeration Form
+      </h1>
       <Form
         name='register_form'
         onFinish={onFinish}

@@ -41,7 +41,14 @@ const LoginPage = () => {
   };
 
   return (
-    <div style={{ maxWidth: 300, margin: '0 auto' }}>
+    <div
+      style={{
+        maxWidth: 300,
+        margin: '0 auto',
+        minHeight: '100vh',
+        paddingTop: '200px',
+      }}
+    >
       <h1>Login</h1>
       {error && <Alert message={error} type='error' showIcon />}
       <Form
