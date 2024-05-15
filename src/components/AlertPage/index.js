@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Form,
   Input,
@@ -25,26 +25,65 @@ const AlertComponent = () => {
 
   const [isAlertSubmitted, setIsAlertSubmitted] = useState(false);
   const [isError, setIsError] = useState(false);
+  const [proximityZones, setProximityZones] = useState([]);
 
-  const onFinish = (values) => {
+  useEffect(() => {
+    async function fetchProximityZones() {
+      try {
+        const response = await axios.get('http://localhost:4000/proximityzone');
+        console.log('Proximity Zones:', response.data);
+        // setAlertData({
+        //   ...alertData,
+        //   proximityZone: response.data[0].name,
+        // });
+        setProximityZones(response.data);
+      } catch (error) {
+        console.error('Failed:', error);
+        setIsError(true);
+      }
+    }
+    fetchProximityZones();
+  }, []);
+
+  const onFinish = async (values) => {
     console.log('Success:', values);
+    try {
+      await axios.post('http://localhost:4000/alerts', values);
+    } catch (error) {
+      console.error('Failed:', error);
+      setIsError(true);
+    }
     notification.open({
-        message: 'Alert Submitted',
-        description: (
-            <>
-                <p><strong>Severity:</strong> {values.severity}</p>
-                <p><strong>Location:</strong> {values.location}</p>
-                <p><strong>Message:</strong> {values.message}</p>
-                {values.additionalNotes && <p><strong>Additional Notes:</strong> {values.additionalNotes}</p>}
-                {values.affectedAreas && <p><strong>Affected Areas:</strong> {values.affectedAreas}</p>}
-            </>
-        ),
-        placement: 'bottomRight',
-        type: 'success',
-        duration: 0,  // Optional: set to 0 to make it stay until clicked away
-        onClose: () => console.log('Notification Closed!')
+      message: 'Alert Submitted',
+      description: (
+        <>
+          <p>
+            <strong>Severity:</strong> {values.severity}
+          </p>
+          <p>
+            <strong>Location:</strong> {values.location}
+          </p>
+          <p>
+            <strong>Message:</strong> {values.message}
+          </p>
+          {values.additionalNotes && (
+            <p>
+              <strong>Additional Notes:</strong> {values.additionalNotes}
+            </p>
+          )}
+          {values.affectedAreas && (
+            <p>
+              <strong>Affected Areas:</strong> {values.affectedAreas}
+            </p>
+          )}
+        </>
+      ),
+      placement: 'bottomRight',
+      type: 'success',
+      duration: 0, // Optional: set to 0 to make it stay until clicked away
+      onClose: () => console.log('Notification Closed!'),
     });
-};
+  };
 
   const onFinishFailed = (errorInfo) => {
     console.log('Failed:', errorInfo);
@@ -118,6 +157,17 @@ const AlertComponent = () => {
           <Form.Item name='affectedAreas' label='Affected Areas'>
             {/* (Implementation for array of objects - See below)  */}
             <Input.TextArea name='affectedAreas' label='Affected Areas' />
+          </Form.Item>
+
+          <Form.Item name='proximityZone' label='proximityZone'>
+            <Select>
+              {proximityZones.map((zone) => (
+                <Option key={zone.id} value={zone._id}>
+                  {/* {zone.name} */}
+                  {`${zone.zoneName} (${zone._id})`}
+                </Option>
+              ))}
+            </Select>
           </Form.Item>
 
           <Form.Item>

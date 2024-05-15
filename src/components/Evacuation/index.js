@@ -14,6 +14,10 @@ const EvacuationComponent = () => {
   const [form] = Form.useForm();
   const [latitude, setLatitude] = useState(43.65107);
   const [longitude, setLongitude] = useState(-79.347015);
+  const [position, setPosition] = useState({ lat: null, lng: null });
+  const [center, setCenter] = useState([51.505, -0.09]); // Default center
+  const [initialCenterSet, setInitialCenterSet] = useState(false); // To track if the initial center has been set
+
   const [map, setMap] = useState(null);
 
   const onFinish = (values) => {
@@ -56,16 +60,43 @@ const EvacuationComponent = () => {
   const MapWithGeoLocation = () => {
     const map = useMap();
 
+    // useEffect(() => {
+    //   if ('geolocation' in navigator) {
+    //     navigator.geolocation.getCurrentPosition((position) => {
+    //       const { latitude, longitude } = position.coords;
+    //       setLatitude(latitude);
+    //       setLongitude(longitude);
+    //       map.flyTo([latitude, longitude], 13, { duration: 2 });
+    //     });
+    //   }
+    // }, []);
+
     useEffect(() => {
+      let isMounted = true;
+
       if ('geolocation' in navigator) {
         navigator.geolocation.getCurrentPosition((position) => {
+          if (!isMounted) return;
           const { latitude, longitude } = position.coords;
-          setLatitude(latitude);
-          setLongitude(longitude);
-          map.flyTo([latitude, longitude], 13, { duration: 2 });
+
+          // Only set the initial center once
+          if (!initialCenterSet) {
+            setCenter([latitude, longitude]);
+            setInitialCenterSet(true);
+            if (map) {
+              map.flyTo([latitude, longitude], 13, {
+                animate: true,
+                duration: 2,
+              });
+            }
+          }
         });
       }
-    }, []);
+
+      return () => {
+        isMounted = false;
+      };
+    }, [map, initialCenterSet]);
 
     return null;
   };
@@ -150,7 +181,7 @@ const EvacuationComponent = () => {
                 />
                 <Marker position={[latitude, longitude]} />
                 <LocationMarker />
-                {/* <MapWithGeoLocation /> */}
+                <MapWithGeoLocation />
               </MapContainer>
             </div>
           </Form.Item>

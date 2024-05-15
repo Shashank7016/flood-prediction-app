@@ -8,11 +8,13 @@ import {
   useMapEvents,
 } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
+import axios from 'axios';
 
 const ProximityZone = () => {
   const [form] = Form.useForm();
   const [position, setPosition] = useState({ lat: null, lng: null });
   const [center, setCenter] = useState([51.505, -0.09]); // Default center
+  const [initialCenterSet, setInitialCenterSet] = useState(false); // To track if the initial center has been set
 
   const LocationMarker = () => {
     useMapEvents({
@@ -30,8 +32,13 @@ const ProximityZone = () => {
     );
   };
 
-  const handleSubmit = (values) => {
+  const handleSubmit = async (values) => {
     console.log('Form Values:', values);
+    try {
+      await axios.post('http://localhost:4000/proximityzone', values);
+    } catch (error) {
+      console.error('Failed:', error);
+    }
   };
 
   const MyMap = () => {
@@ -44,12 +51,17 @@ const ProximityZone = () => {
         navigator.geolocation.getCurrentPosition((position) => {
           if (!isMounted) return;
           const { latitude, longitude } = position.coords;
-          setCenter([latitude, longitude]);
-          if (map) {
-            map.flyTo([latitude, longitude], 13, {
-              // animate: true,
-              // duration: 3,
-            });
+
+          // Only set the initial center once
+          if (!initialCenterSet) {
+            setCenter([latitude, longitude]);
+            setInitialCenterSet(true);
+            if (map) {
+              map.flyTo([latitude, longitude], 13, {
+                animate: true,
+                duration: 2,
+              });
+            }
           }
         });
       }
@@ -57,7 +69,7 @@ const ProximityZone = () => {
       return () => {
         isMounted = false;
       };
-    }, [map]);
+    }, [map, initialCenterSet]);
 
     return null;
   };

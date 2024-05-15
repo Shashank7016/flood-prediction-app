@@ -11,14 +11,18 @@ import {
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { useAuth } from '../../contexts/AuthContext';
+import axios from 'axios';
+import { findNearestSafeZone } from '../../util/distance';
+import { message } from 'antd';
 
 const MarkerMap = () => {
   const [evacuationZonesData, setEvacuationZoneData] = useState([]);
   const [proximityzone, setProximityzone] = useState([]);
+
   const mapRef = useRef(null);
   // const map = useMap();
 
-  const { user } = useAuth();
+  const { user, setconnectedProximityZone } = useAuth();
 
   const markerIcon = new L.Icon({
     iconUrl: './marker-icon-2x.png',
@@ -26,6 +30,13 @@ const MarkerMap = () => {
     iconAnchor: [22, 94],
     popupAnchor: [-3, -76],
   });
+  const proximityZoneMarker = new L.Icon({
+    iconUrl: './radio-icon-2x.png',
+    iconSize: [38, 38], // Adjust as needed
+    iconAnchor: [22, 94],
+    popupAnchor: [-3, -76],
+  });
+
   const safeZoneMarker = new L.Icon({
     iconUrl: './safezone.png',
     iconSize: [38, 38], // Adjust as needed
@@ -37,33 +48,49 @@ const MarkerMap = () => {
   const [longitude, setLongitude] = useState(-122.4194);
 
   useEffect(() => {
-    // Example: Fetch data from an API
-
-    // if (navigator.geolocation) {
-    //   navigator.geolocation.getCurrentPosition(
-    //     (position) => {
-    //       const latitude = position.coords.latitude;
-    //       const longitude = position.coords.longitude;
-    //       console.log(latitude, longitude);
-    //       setLatitude(latitude);
-    //       setLongitude(longitude);
-    //     },
-    //     (error) => {
-    //       console.error(error);
-    //     }
-    //   );
-    // } else {
-    //   console.error('Geolocation is not supported by this browser.');
-    // }
-
     const fetchData = async () => {
       const response = await fetch('http://localhost:4000/evacuation');
       const data = await response.json();
+      const proximityResponse = await fetch(
+        'http://localhost:4000/proximityzone'
+      );
+      const proximityData = await proximityResponse.json();
+      setProximityzone(proximityData);
       setEvacuationZoneData(data);
       // console.log(data);
     };
+
     fetchData();
   }, []);
+
+  useEffect(() => {
+    const findClosestProximityZone = () => {
+      const result = findNearestSafeZone(
+        [user.latitude, user.longitude],
+        proximityzone
+      );
+      console.log(result, user);
+      if (result && result.zone)
+        attachToClosestProximityZone(result.zone._id, user.username);
+    };
+
+    const attachToClosestProximityZone = async (zone, user) => {
+      try {
+        const response = await axios.post(
+          'http://localhost:4000/users/attach',
+          { name: user, proximityZoneId: zone }
+        );
+        console.log(response.data);
+        message.success(
+          `Attached to closest proximity zone - ${response.data.proximityZone.zoneName}`
+        );
+        setconnectedProximityZone(response.data.proximityZone);
+      } catch (error) {
+        console.error('Failed:', error);
+      }
+    };
+    findClosestProximityZone();
+  }, [evacuationZonesData]);
 
   const LoactionMaker = () => {
     const map = useMap({});
@@ -129,6 +156,28 @@ const MarkerMap = () => {
                   <h2>{marker.zoneName}</h2>
                   <p>Capacity - {marker.capacity}</p>
                   <p>Current Occupancy - {marker.currentOccupancy}</p>
+                </div>
+              </Popup>
+            </Marker>
+          </>
+        ))}
+        {proximityzone.map((marker, index) => (
+          <>
+            <Circle
+              center={{ lat: marker.latitude, lng: marker.longitude }}
+              pathOptions={{ color: '#66b3ff' }}
+              radius={marker.radius * 1000}
+            />
+            <Marker position={[latitude, longitude]} icon={markerIcon}></Marker>
+            <Marker
+              key={index}
+              position={[marker.latitude, marker.longitude]}
+              icon={proximityZoneMarker}
+            >
+              <Popup>
+                <div>
+                  <h2>{marker.zoneName}</h2>
+                  <p>Radius Covered - {marker.radius} Km</p>
                 </div>
               </Popup>
             </Marker>
