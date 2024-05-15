@@ -23,8 +23,22 @@ const { RangePicker } = DatePicker;
 const { Option } = Select;
 
 const AnalysisPage = () => {
+  const colors = [
+    '#8884d8', // Rainfall Amount
+    '#82ca9d', // River Water Level
+    '#ffc658', // Soil Moisture Content
+    '#ff7300', // Temperature
+    '#0088FE', // Relative Humidity
+    '#00C49F', // Wind Speed
+    '#FFBB28', // Topography
+    '#FF8042', // Urbanization Rate
+    '#FF0000', // Drainage System Capacity
+    '#00FF00', // Previous Flood History
+    '#0000FF', // Flood Event
+  ];
   const location = useLocation();
   const [dates, setDates] = useState([]);
+  const [chartData, setChartData] = useState([]);
   const [selectedLocation, setSelectedLocation] = useState('');
   const [chartType, setChartType] = useState('line');
   const [data, setData] = useState([]);
@@ -79,105 +93,85 @@ const AnalysisPage = () => {
     switch (chartType) {
       case 'line':
         return (
-          <LineChart ref={lineChartRef} width={600} height={300} data={data}>
-            <CartesianGrid strokeDasharray='3 3' />
-            <XAxis dataKey='date' />
+          <LineChart
+            width={600}
+            height={300}
+            data={chartData}
+            ref={lineChartRef}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="name" />
             <YAxis />
             <Tooltip />
             <Legend />
             <Line
-              type='monotone'
-              dataKey='seaLevel'
-              stroke='#8884d8'
-              activeDot={{ r: 8 }}
-            />
-            <Line type='monotone' dataKey='rainfall' stroke='#82ca9d' />
-            <Line type='monotone' dataKey='windDirection' stroke='#ffc658' />
+              type="monotone"
+              dataKey="value"
+              stroke="#8884d8"
+            >
+              {chartData.map((entry) => (
+                <Line
+                  key={entry.name}
+                  type="monotone"
+                  dataKey="value"
+                  data={[entry]}
+                  stroke={entry.color}
+                />
+              ))}
+            </Line>
           </LineChart>
         );
       case 'bar':
         return (
-          <BarChart ref={barChartRef} width={600} height={300} data={data}>
-            <CartesianGrid strokeDasharray='3 3' />
-            <XAxis dataKey='date' />
+          <BarChart
+            width={600}
+            height={300}
+            data={chartData}
+            ref={barChartRef}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="name" />
             <YAxis />
             <Tooltip />
             <Legend />
-            <Bar dataKey='seaLevel' fill='#8884d8' />
-            <Bar dataKey='rainfall' fill='#82ca9d' />
-            <Bar dataKey='windDirection' fill='#ffc658' />
+            <Bar dataKey="value">
+              {chartData.map((entry) => (
+                <Cell
+                  key={entry.name}
+                  fill={entry.color}
+                />
+              ))}
+            </Bar>
           </BarChart>
         );
       case 'pie':
-        // Pie charts require data to be structured differently
-        // Creating separate pie data for each attribute
-        const pieDataSeaLevel = data.map((item) => ({
-          name: item.date,
-          value: item.seaLevel,
-        }));
-
-        const pieDataRainfall = data.map((item) => ({
-          name: item.date,
-          value: item.rainfall,
-        }));
-
-        const pieDataWindDirection = data.map((item) => ({
-          name: item.date,
-          value: item.windDirection,
-        }));
-
         return (
-          <div className='pie-charts-container'>
-            <PieChart ref={pieChartRef} width={300} height={300}>
-              <Pie
-                data={pieDataSeaLevel}
-                dataKey='value'
-                nameKey='name'
-                cx='50%'
-                cy='50%'
-                outerRadius={100}
-                fill='#8884d8'
-                label
-              >
-                <Cell key={`cell-0`} fill='#8884d8' />
-                <Tooltip />
-                <Legend />
-              </Pie>
-            </PieChart>
-            <PieChart ref={pieChartRef} width={300} height={300}>
-              <Pie
-                data={pieDataRainfall}
-                dataKey='value'
-                nameKey='name'
-                cx='50%'
-                cy='50%'
-                outerRadius={100}
-                fill='#82ca9d'
-                label
-              >
-                <Tooltip />
-              </Pie>
-            </PieChart>
-            <PieChart ref={pieChartRef} width={300} height={300}>
-              <Pie
-                data={pieDataWindDirection}
-                dataKey='value'
-                nameKey='name'
-                cx='50%'
-                cy='50%'
-                outerRadius={100}
-                fill='#ffc658'
-                label
-              >
-                <Tooltip />
-              </Pie>
-            </PieChart>
-          </div>
+          <PieChart width={300} height={300} ref={pieChartRef}>
+            <Pie
+              data={chartData}
+              dataKey="value"
+              nameKey="name"
+              cx="50%"
+              cy="50%"
+              outerRadius={100}
+              fill="#8884d8"
+              label
+            >
+              {chartData.map((entry) => (
+                <Cell
+                  key={entry.name}
+                  fill={entry.color}
+                />
+              ))}
+            </Pie>
+            <Tooltip />
+          </PieChart>
         );
       default:
         return null;
     }
   };
+  
 
   const handleDateRangeChange = (dates, dateStrings) => {
     if (!dates) {
@@ -195,35 +189,20 @@ const AnalysisPage = () => {
     }
   };
 
-  const fetchData = () => {
-    if (!dates.length || !selectedLocation) {
-      setError('Please select both date range and location.');
-      setData([]);
-      setAnalysisResult('');
+  /*const fetchData = () => {
+    if (Object.keys(data).length > 0) {
+      // Example: assuming data contains properties like rainfallAmount, temperature, and relativeHumidity
+      const chartData = [
+        { category: "Rainfall", value: data.rainfallAmount },
+        { category: "Temperature", value: data.temperature },
+        { category: "Humidity", value: data.relativeHumidity }
+      ];
+      setChartData(chartData);  // Assuming you've defined a state [chartData, setChartData] for holding chartable data
     } else {
-      setError('');
-      const startDate = moment(dates[0]);
-      const endDate = moment(dates[1]);
-
-      // Generate data for each day in the range
-      const generatedData = [];
-      for (
-        let m = moment(startDate);
-        m.diff(endDate, 'days') <= 0;
-        m.add(1, 'days')
-      ) {
-        generatedData.push({
-          date: m.format('YYYY-MM-DD'),
-          seaLevel: 5 + Math.random() * 2, // Random fluctuation
-          rainfall: 200 + Math.random() * 50, // Random fluctuation
-          windDirection: 90 + Math.random() * 180, // Random fluctuation
-        });
-      }
-
-      setData(generatedData);
-      setAnalysisResult('True'); // Simulate analysis result
+      console.error("No data available for charts");
+      setError("No data available. Please fill and submit the form.");
     }
-  };
+  };*/
 
   return (
     <div>
@@ -267,29 +246,17 @@ const AnalysisPage = () => {
           <Option value='bar'>Bar Chart</Option>
           <Option value='pie'>Pie Chart</Option>
         </Select>
-        <Button type='primary' onClick={fetchData} style={{ marginLeft: 20 }}>
-          Go
-        </Button>
         <Button onClick={downloadChart} style={{ marginLeft: 20 }}>
           Download Chart
         </Button>
       </div>
-      <FloodPredictionForm />
-      {error && (
-        <Alert
-          message={error}
-          type='error'
-          showIcon
-          style={{ marginBottom: 20 }}
-        />
-      )}
-      {data.length > 0 && (
-        <>
-          {renderChart()}
-          <Divider />
-          <h2>Analysis Result: {analysisResult}</h2>
-        </>
-      )}
+      {chartData.length > 0 && (
+                <div>
+                    {renderChart()}
+                </div>
+            )}
+      <FloodPredictionForm setChartData={setChartData}/>
+      
     </div>
   );
 };

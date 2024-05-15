@@ -15,25 +15,55 @@ import 'leaflet/dist/leaflet.css';
 import axios from 'axios';
 const { Option } = Select;
 
-const FloodPredictionForm = () => {
+const colors = {
+  'Rainfall Amount': '#8884d8',
+  'River Water Level': '#82ca9d',
+  'Soil Moisture Content': '#ffc658',
+  'Temperature': '#ff7300',
+  'Relative Humidity': '#0088FE',
+  'Wind Speed': '#00C49F',
+  'Topography': '#FFBB28',
+  'Urbanization Rate': '#FF8042',
+  'Drainage System Capacity': '#FF0000',
+  'Previous Flood History': '#00FF00',
+  'Flood Event': '#0000FF',
+};
+
+const FloodPredictionForm = ({ setChartData }) => {
   const [form] = Form.useForm();
+
+  const transformDataForChart = (values) => {
+    return [
+      { name: 'Rainfall Amount', value: values.rainfallAmount || 0, color: colors['Rainfall Amount'] },
+      { name: 'River Water Level', value: values.riverWaterLevel || 0, color: colors['River Water Level'] },
+      { name: 'Soil Moisture Content', value: values.soilMoistureContent || 0, color: colors['Soil Moisture Content'] },
+      { name: 'Temperature', value: values.temperature || 0, color: colors['Temperature'] },
+      { name: 'Relative Humidity', value: values.relativeHumidity || 0, color: colors['Relative Humidity'] },
+      { name: 'Wind Speed', value: values.windSpeed || 0, color: colors['Wind Speed'] },
+      { name: 'Topography', value: values.topography || 0, color: colors['Topography'] },
+      { name: 'Urbanization Rate', value: values.urbanizationRate || 0, color: colors['Urbanization Rate'] },
+      { name: 'Drainage System Capacity', value: values.drainageSystemCapacity || 0, color: colors['Drainage System Capacity'] },
+      { name: 'Previous Flood History', value: values.previousFloodHistory || 0, color: colors['Previous Flood History'] },
+      { name: 'Flood Event', value: values.floodEvent || 0, color: colors['Flood Event'] }
+    ];
+  };
+
+  const handleValuesChange = (_, allValues) => {
+    const chartData = transformDataForChart(allValues);
+    setChartData(chartData);
+  };
+
   const [latitude, setLatitude] = useState(37.7749);
   const [longitude, setLongitude] = useState(-122.4194);
 
   const onFinish = (values) => {
-    // Process and send the form data to your API
     axios
       .post('http://localhost:4000/ml/svm', values)
       .then((response) => {
-        console.log('Response Data', response.data);
-        console.log('Form Data', values);
         const formedObject = { ...values, predicted: response.data };
-        console.log('Formed Object', formedObject);
+        setChartData(transformDataForChart(formedObject));
         axios
-          .post(
-            'http://localhost:4000/predictions/createPredictions',
-            formedObject
-          )
+          .post('http://localhost:4000/predictions/createPredictions', formedObject)
           .then((response) => {
             console.log('Response Data', response.data);
           })
@@ -46,7 +76,6 @@ const FloodPredictionForm = () => {
         console.error('There was an error!', error);
         message.error('There was an error submitting the form.');
       });
-    // console.log('Form data:', values);
   };
 
   const onFinishFailed = (errorInfo) => {
@@ -59,7 +88,7 @@ const FloodPredictionForm = () => {
   };
 
   const LocationMarker = () => {
-    const map = useMapEvents({
+    useMapEvents({
       click: handleMapClick,
     });
 
@@ -70,7 +99,6 @@ const FloodPredictionForm = () => {
     form
       .validateFields()
       .then((values) => {
-        // Check if values are empty or default
         if (
           Object.values(values).every((val) => val === undefined || val === '')
         ) {
@@ -90,6 +118,7 @@ const FloodPredictionForm = () => {
       onFinish={onFinish}
       onFinishFailed={onFinishFailed}
       layout='vertical'
+      onValuesChange={handleValuesChange}
       style={{ width: '80%', margin: '0 auto', paddingBottom: '50px' }}
     >
       <Row gutter={16}>
