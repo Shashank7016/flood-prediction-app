@@ -10,10 +10,15 @@ import {
 } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import { useAuth } from '../../contexts/AuthContext';
 
 const MarkerMap = () => {
   const [evacuationZonesData, setEvacuationZoneData] = useState([]);
+  const [proximityzone, setProximityzone] = useState([]);
   const mapRef = useRef(null);
+  // const map = useMap();
+
+  const { user } = useAuth();
 
   const markerIcon = new L.Icon({
     iconUrl: './marker-icon-2x.png',
@@ -34,28 +39,28 @@ const MarkerMap = () => {
   useEffect(() => {
     // Example: Fetch data from an API
 
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const latitude = position.coords.latitude;
-          const longitude = position.coords.longitude;
-          console.log(latitude, longitude);
-          setLatitude(latitude);
-          setLongitude(longitude);
-        },
-        (error) => {
-          console.error(error);
-        }
-      );
-    } else {
-      console.error('Geolocation is not supported by this browser.');
-    }
+    // if (navigator.geolocation) {
+    //   navigator.geolocation.getCurrentPosition(
+    //     (position) => {
+    //       const latitude = position.coords.latitude;
+    //       const longitude = position.coords.longitude;
+    //       console.log(latitude, longitude);
+    //       setLatitude(latitude);
+    //       setLongitude(longitude);
+    //     },
+    //     (error) => {
+    //       console.error(error);
+    //     }
+    //   );
+    // } else {
+    //   console.error('Geolocation is not supported by this browser.');
+    // }
 
     const fetchData = async () => {
       const response = await fetch('http://localhost:4000/evacuation');
       const data = await response.json();
       setEvacuationZoneData(data);
-      console.log(data);
+      // console.log(data);
     };
     fetchData();
   }, []);
@@ -66,8 +71,22 @@ const MarkerMap = () => {
     useEffect(() => {
       if (mapRef.current) return;
       mapRef.current = map;
-      map.whenReady(() => {});
-    }, [map]);
+
+      const flyToLocation = () => {
+        if (map) {
+          // console.log('user', user);
+          map.flyTo([user.latitude, user.longitude], 13, {
+            animate: true,
+            duration: 3,
+          });
+          setLatitude(user.latitude);
+          setLongitude(user.longitude);
+        } else {
+          console.log('Map not loaded');
+        }
+      };
+      flyToLocation();
+    }, [map, user]);
 
     // const handleClickInteraction = (e) => {
     //   console.log('clicked on ', e.latlng);
@@ -99,6 +118,7 @@ const MarkerMap = () => {
               pathOptions={{ color: 'green' }}
               radius={600}
             />
+            <Marker position={[latitude, longitude]} icon={markerIcon}></Marker>
             <Marker
               key={index}
               position={[marker.latitude, marker.longitude]}

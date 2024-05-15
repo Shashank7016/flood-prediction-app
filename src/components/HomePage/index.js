@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Typography } from 'antd';
 import AlertList from '../AlertList';
 import MarkerMap from '../Evacuation/Map';
+import { useAuth } from '../../contexts/AuthContext';
 
 const { Title } = Typography;
 export default function HomePage() {

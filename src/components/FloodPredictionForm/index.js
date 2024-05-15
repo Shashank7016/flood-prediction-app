@@ -9,6 +9,8 @@ import {
   Col,
   Space,
   message,
+  Modal,
+  Spin,
 } from 'antd';
 import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -19,32 +21,76 @@ const colors = {
   'Rainfall Amount': '#8884d8',
   'River Water Level': '#82ca9d',
   'Soil Moisture Content': '#ffc658',
-  'Temperature': '#ff7300',
+  Temperature: '#ff7300',
   'Relative Humidity': '#0088FE',
   'Wind Speed': '#00C49F',
-  'Topography': '#FFBB28',
+  Topography: '#FFBB28',
   'Urbanization Rate': '#FF8042',
   'Drainage System Capacity': '#FF0000',
   'Previous Flood History': '#00FF00',
   'Flood Event': '#0000FF',
 };
 
-const FloodPredictionForm = ({ setChartData }) => {
+const FloodPredictionForm = ({ setChartData, algorithm }) => {
   const [form] = Form.useForm();
 
   const transformDataForChart = (values) => {
     return [
-      { name: 'Rainfall Amount', value: values.rainfallAmount || 0, color: colors['Rainfall Amount'] },
-      { name: 'River Water Level', value: values.riverWaterLevel || 0, color: colors['River Water Level'] },
-      { name: 'Soil Moisture Content', value: values.soilMoistureContent || 0, color: colors['Soil Moisture Content'] },
-      { name: 'Temperature', value: values.temperature || 0, color: colors['Temperature'] },
-      { name: 'Relative Humidity', value: values.relativeHumidity || 0, color: colors['Relative Humidity'] },
-      { name: 'Wind Speed', value: values.windSpeed || 0, color: colors['Wind Speed'] },
-      { name: 'Topography', value: values.topography || 0, color: colors['Topography'] },
-      { name: 'Urbanization Rate', value: values.urbanizationRate || 0, color: colors['Urbanization Rate'] },
-      { name: 'Drainage System Capacity', value: values.drainageSystemCapacity || 0, color: colors['Drainage System Capacity'] },
-      { name: 'Previous Flood History', value: values.previousFloodHistory || 0, color: colors['Previous Flood History'] },
-      { name: 'Flood Event', value: values.floodEvent || 0, color: colors['Flood Event'] }
+      {
+        name: 'Rainfall Amount',
+        value: values.rainfallAmount || 0,
+        color: colors['Rainfall Amount'],
+      },
+      {
+        name: 'River Water Level',
+        value: values.riverWaterLevel || 0,
+        color: colors['River Water Level'],
+      },
+      {
+        name: 'Soil Moisture Content',
+        value: values.soilMoistureContent || 0,
+        color: colors['Soil Moisture Content'],
+      },
+      {
+        name: 'Temperature',
+        value: values.temperature || 0,
+        color: colors['Temperature'],
+      },
+      {
+        name: 'Relative Humidity',
+        value: values.relativeHumidity || 0,
+        color: colors['Relative Humidity'],
+      },
+      {
+        name: 'Wind Speed',
+        value: values.windSpeed || 0,
+        color: colors['Wind Speed'],
+      },
+      {
+        name: 'Topography',
+        value: values.topography || 0,
+        color: colors['Topography'],
+      },
+      {
+        name: 'Urbanization Rate',
+        value: values.urbanizationRate || 0,
+        color: colors['Urbanization Rate'],
+      },
+      {
+        name: 'Drainage System Capacity',
+        value: values.drainageSystemCapacity || 0,
+        color: colors['Drainage System Capacity'],
+      },
+      {
+        name: 'Previous Flood History',
+        value: values.previousFloodHistory || 0,
+        color: colors['Previous Flood History'],
+      },
+      {
+        name: 'Flood Event',
+        value: values.floodEvent || 0,
+        color: colors['Flood Event'],
+      },
     ];
   };
 
@@ -55,17 +101,57 @@ const FloodPredictionForm = ({ setChartData }) => {
 
   const [latitude, setLatitude] = useState(37.7749);
   const [longitude, setLongitude] = useState(-122.4194);
+  const [loading, setLoading] = useState(true);
+  const [prediction, setPrediction] = useState(null);
+
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
+  const showModal = () => {
+    setIsModalVisible(true);
+    setLoading(true);
+    setPrediction(null);
+  };
+
+  const handleOk = () => {
+    setIsModalVisible(false);
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+  };
 
   const onFinish = (values) => {
+    let algorithm_uri_base = 'http://localhost:4000/ml/';
+    let algorithm_uri = '';
+    if (algorithm === 'svm') {
+      algorithm_uri = algorithm_uri_base + 'svm';
+    } else if (algorithm === 'logistic_regression') {
+      algorithm_uri = algorithm_uri_base + 'logistic_regression';
+    } else if (algorithm === 'decision_tree') {
+      algorithm_uri = algorithm_uri_base + 'decision_tree';
+    }
+
     axios
-      .post('http://localhost:4000/ml/svm', values)
+      .post(algorithm_uri, values)
       .then((response) => {
-        const formedObject = { ...values, predicted: response.data };
+        const formedObject = {
+          ...values,
+          predicted: response.data,
+          algorithm: algorithm,
+        };
+        console.log('Formed Object', formedObject);
         setChartData(transformDataForChart(formedObject));
+        showModal();
         axios
-          .post('http://localhost:4000/predictions/createPredictions', formedObject)
+          .post(
+            'http://localhost:4000/predictions/createPredictions',
+            formedObject
+          )
           .then((response) => {
             console.log('Response Data', response.data);
+            setPrediction(response.data.predicted);
+            setLoading(false);
+            setIsModalVisible(true);
           })
           .catch((error) => {
             console.error('There was an error!', error);
@@ -121,6 +207,49 @@ const FloodPredictionForm = ({ setChartData }) => {
       onValuesChange={handleValuesChange}
       style={{ width: '80%', margin: '0 auto', paddingBottom: '50px' }}
     >
+      <Modal
+        title='Flood Prediction Result'
+        open={isModalVisible}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        footer={[
+          <Button key='cancel' onClick={handleCancel}>
+            Cancel
+          </Button>,
+          ,
+          <Button
+            key='alert'
+            type='primary'
+            // onClick={sendAlert}
+            disabled={loading}
+          >
+            Send Alert
+          </Button>,
+
+          <Button key='ok' type='primary' onClick={handleOk}>
+            OK
+          </Button>,
+        ]}
+      >
+        {loading ? (
+          <div style={{ textAlign: 'center' }}>
+            <Spin size='large' />
+          </div>
+        ) : (
+          <>
+            <p>
+              Predicted Flood:{' '}
+              <strong>{prediction === 1 ? 'Flood' : 'No Flood'}</strong>
+            </p>
+            <p>
+              Algorithm Used: <strong>{algorithm}</strong>
+            </p>
+          </>
+        )}
+        {/* <p>
+          Predicted Flood: <strong>True</strong>
+        </p> */}
+      </Modal>
       <Row gutter={16}>
         <Col span={12}>
           <Form.Item

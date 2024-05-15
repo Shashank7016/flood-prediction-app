@@ -22,6 +22,8 @@ const LoginPage = () => {
           login({
             username: response.data.name,
             role: response.data.role == 'admin' ? 'admin' : 'user',
+            latitude: response.data.latitude,
+            longitude: response.data.longitude,
           });
           navigate('/home');
         })
@@ -82,6 +84,7 @@ const LoginPage = () => {
       <p>
         Don't have an account? <Link to='/register'>Create an account</Link>
       </p>
+      <p>Continue as a Guest</p>
     </div>
   );
 };

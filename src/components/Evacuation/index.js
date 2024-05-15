@@ -1,6 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Form, Input, InputNumber, Button, message, Row, Col } from 'antd';
-import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  useMapEvents,
+  useMap,
+} from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import axios from 'axios';
 
@@ -8,10 +14,10 @@ const EvacuationComponent = () => {
   const [form] = Form.useForm();
   const [latitude, setLatitude] = useState(43.65107);
   const [longitude, setLongitude] = useState(-79.347015);
+  const [map, setMap] = useState(null);
 
   const onFinish = (values) => {
     console.log('Form data:', values);
-    // Send data to your backend or API here
     delete values.location;
     values.latitude = latitude;
     values.longitude = longitude;
@@ -24,7 +30,7 @@ const EvacuationComponent = () => {
       })
       .catch((error) => {
         console.error('There was an error!', error);
-        message.error('There was an error creating the evacuation zone./');
+        message.error('There was an error creating the evacuation zone.');
       });
   };
 
@@ -32,21 +38,36 @@ const EvacuationComponent = () => {
     console.log('Failed:', errorInfo);
   };
 
-  const handleMapClick = (e) => {
-    setLatitude(e.latlng.lat);
-    setLongitude(e.latlng.lng);
-  };
-
   const LocationMarker = () => {
-    const map = useMapEvents({
+    useMapEvents({
       click: (e) => {
         setLatitude(e.latlng.lat);
         setLongitude(e.latlng.lng);
-        console.log('Latitude:', latitude, 'Longitude:', longitude);
+        form.setFieldsValue({
+          latitude: e.latlng.lat,
+          longitude: e.latlng.lng,
+        });
       },
     });
 
     return <Marker position={[latitude, longitude]} />;
+  };
+
+  const MapWithGeoLocation = () => {
+    const map = useMap();
+
+    useEffect(() => {
+      if ('geolocation' in navigator) {
+        navigator.geolocation.getCurrentPosition((position) => {
+          const { latitude, longitude } = position.coords;
+          setLatitude(latitude);
+          setLongitude(longitude);
+          map.flyTo([latitude, longitude], 13, { duration: 2 });
+        });
+      }
+    }, []);
+
+    return null;
   };
 
   return (
@@ -55,7 +76,6 @@ const EvacuationComponent = () => {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        // height: '100vh',
       }}
     >
       <div style={{ width: '60%', marginTop: '30px' }}>
@@ -66,16 +86,10 @@ const EvacuationComponent = () => {
           onFinish={onFinish}
           onFinishFailed={onFinishFailed}
           layout='vertical'
-          initialValues={
-            {
-              // zoneName: 'Chennai',
-              // capacity: 400,
-              // currentOccupancy: 0,
-              // members: 0,
-              // latitude: latitude,
-              // longitude: longitude,
-            }
-          }
+          initialValues={{
+            latitude,
+            longitude,
+          }}
         >
           <Form.Item
             label='Zone Name'
@@ -90,13 +104,7 @@ const EvacuationComponent = () => {
               <Form.Item
                 label='Capacity'
                 name='capacity'
-                rules={[
-                  {
-                    required: true,
-                    message: 'Please input capacity',
-                    // defaultField: '400',
-                  },
-                ]}
+                rules={[{ required: true, message: 'Please input capacity' }]}
               >
                 <InputNumber min={0} />
               </Form.Item>
@@ -134,6 +142,7 @@ const EvacuationComponent = () => {
                 center={[latitude, longitude]}
                 zoom={13}
                 style={{ height: '100%' }}
+                whenCreated={setMap}
               >
                 <TileLayer
                   attribution='© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -141,6 +150,7 @@ const EvacuationComponent = () => {
                 />
                 <Marker position={[latitude, longitude]} />
                 <LocationMarker />
+                {/* <MapWithGeoLocation /> */}
               </MapContainer>
             </div>
           </Form.Item>

@@ -1,10 +1,52 @@
-import React, { useState } from 'react';
-import { Form, Input, Button, Alert, message, InputNumber, Switch } from 'antd';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import {
+  Form,
+  Input,
+  Button,
+  Alert,
+  message,
+  InputNumber,
+  Switch,
+  notification,
+} from 'antd';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const RegisterPage = () => {
   const [isAdmin, setIsAdmin] = useState(false);
+  const [location, setLocation] = useState({ lat: null, lon: null });
+  const navigate = useNavigate();
+  const getLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setLocation({
+            lat: position.coords.latitude,
+            lon: position.coords.longitude,
+          });
+          notification.success({
+            message: 'Geolocation Retrieved',
+            description: `Latitude: ${position.coords.latitude}, Longitude: ${position.coords.longitude}`,
+          });
+        },
+        (error) => {
+          notification.error({
+            message: 'Geolocation Error',
+            description: error.message,
+          });
+        }
+      );
+    } else {
+      notification.error({
+        message: 'Geolocation Not Supported',
+        description: 'Your browser does not support geolocation.',
+      });
+    }
+  };
+
+  // useEffect(() => {
+  //   getLocation();
+  // }, []);
 
   const onFinish = async (values) => {
     console.log('Received values of form: ', values);
@@ -12,13 +54,23 @@ const RegisterPage = () => {
       message.error('Passwords do not match!');
       return;
     }
+
+    getLocation();
+
     try {
-      // Here you would typically call a backend service to register the user
-      axios.post('http://localhost:4000/users/', values).then((response) => {
-        console.log('Response Data', response.data);
-        console.log('Form Data', values);
-        message.success('Form submitted successfully!');
-      });
+      let formedData = {
+        ...values,
+        latitude: location.lat,
+        longitude: location.lon,
+      };
+      axios
+        .post('http://localhost:4000/users/', formedData)
+        .then((response) => {
+          console.log('Response Data', response.data);
+          console.log('Form Data', values);
+          // message.success('Form submitted successfully!');
+          navigate('/');
+        });
       message.success('Registration successful!');
     } catch (error) {
       console.error('Failed to register user:', error);
@@ -145,6 +197,10 @@ const RegisterPage = () => {
           rules={[{ required: true, message: 'Please confirm your password!' }]}
         >
           <Input.Password />
+        </Form.Item>
+
+        <Form.Item>
+          <Button onClick={getLocation}>Retrieve Location</Button>
         </Form.Item>
 
         <Form.Item>

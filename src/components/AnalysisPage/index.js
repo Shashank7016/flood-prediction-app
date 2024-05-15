@@ -249,7 +249,7 @@ const AnalysisPage = () => {
       {chartData.length > 0 && (
         <div style={{ margin: '0 auto' }}>{renderChart()}</div>
       )}
-      <FloodPredictionForm setChartData={setChartData} />
+      <FloodPredictionForm setChartData={setChartData} algorithm={algorithm} />
     </div>
   );
 };

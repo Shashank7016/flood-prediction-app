@@ -33,6 +33,10 @@ const Navbar = () => {
         { label: <Link to='/analysis'>Analysis</Link>, key: 'analysis' },
         { label: <Link to='/alerts'>Alerts</Link>, key: 'alerts' },
         { label: <Link to='/evacuation'>Evacuation</Link>, key: 'evacuation' },
+        {
+          label: <Link to='/proximityzone'>Proximity Zone</Link>,
+          key: 'proximityzone',
+        },
       ]);
     }
   }
