@@ -41,3 +41,24 @@ export const findNearestSafeZone = (currentLocation, safeZones) => {
 
   return nearestSafeZone;
 };
+
+export const findZonesByProximity = (currentLocation, safeZones) => {
+  const [currentLat, currentLon] = currentLocation;
+
+  const zonesWithDistance = safeZones.map((zone) => {
+    const distance = haversineDistance(
+      currentLat,
+      currentLon,
+      zone.latitude,
+      zone.longitude
+    );
+    return {
+      ...zone,
+      distance,
+    };
+  });
+
+  zonesWithDistance.sort((a, b) => a.distance - b.distance);
+
+  return zonesWithDistance;
+};

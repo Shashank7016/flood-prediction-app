@@ -161,10 +161,10 @@ const FAQ = () => {
   const [foundQuestion, setFoundQuestion] = useState(null);
 
   const onSearch = (value) => {
-    setSearchText(value);
+    setSearchText(value.toLowerCase());
     const foundQuestion = faqData
       .flatMap((section) => section.faqs)
-      .find((faq) => faq.question.toLowerCase() === value.toLowerCase());
+      .find((faq) => faq.question.toLowerCase().includes(value.toLowerCase()));
 
     if (foundQuestion) {
       setFoundQuestion(foundQuestion);
@@ -173,8 +173,8 @@ const FAQ = () => {
       );
       setFoundSection(sectionContainingQuestion);
     } else {
-      const foundSection = faqData.find(
-        (section) => section.title.toLowerCase() === value.toLowerCase()
+      const foundSection = faqData.find((section) =>
+        section.title.toLowerCase().includes(value.toLowerCase())
       );
       setFoundSection(foundSection);
       setFoundQuestion(null);

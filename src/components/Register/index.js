@@ -16,7 +16,7 @@ const RegisterPage = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [location, setLocation] = useState({ lat: null, lon: null });
   const navigate = useNavigate();
-  const getLocation = () => {
+  const getLocation = async () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
@@ -44,9 +44,9 @@ const RegisterPage = () => {
     }
   };
 
-  // useEffect(() => {
-  //   getLocation();
-  // }, []);
+  useEffect(() => {
+    getLocation();
+  }, []);
 
   const onFinish = async (values) => {
     console.log('Received values of form: ', values);
@@ -55,7 +55,7 @@ const RegisterPage = () => {
       return;
     }
 
-    getLocation();
+    // await getLocation();
 
     try {
       let formedData = {

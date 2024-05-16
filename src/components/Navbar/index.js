@@ -37,6 +37,10 @@ const Navbar = () => {
           label: <Link to='/proximityzone'>Proximity Zone</Link>,
           key: 'proximityzone',
         },
+        {
+          label: <Link to='/floodzone'>Flood Zone</Link>,
+          key: 'floodzone',
+        },
       ]);
     }
   }

@@ -4,7 +4,6 @@ import {
   TileLayer,
   Marker,
   Popup,
-  useMapEvents,
   useMap,
   Circle,
 } from 'react-leaflet';
@@ -18,28 +17,40 @@ import { message } from 'antd';
 const MarkerMap = () => {
   const [evacuationZonesData, setEvacuationZoneData] = useState([]);
   const [proximityzone, setProximityzone] = useState([]);
+  const [floodZones, setFloodZones] = useState([]);
 
   const mapRef = useRef(null);
-  // const map = useMap();
 
-  const { user, setconnectedProximityZone } = useAuth();
+  const { user, setconnectedProximityZone, connectedProximityZone } = useAuth();
 
   const markerIcon = new L.Icon({
     iconUrl: './marker-icon-2x.png',
-    iconSize: [38, 60], // Adjust as needed
+    iconSize: [38, 60],
     iconAnchor: [22, 94],
     popupAnchor: [-3, -76],
   });
   const proximityZoneMarker = new L.Icon({
     iconUrl: './radio-icon-2x.png',
-    iconSize: [38, 38], // Adjust as needed
+    iconSize: [38, 38],
     iconAnchor: [22, 94],
     popupAnchor: [-3, -76],
   });
 
   const safeZoneMarker = new L.Icon({
     iconUrl: './safezone.png',
-    iconSize: [38, 38], // Adjust as needed
+    iconSize: [38, 38],
+    iconAnchor: [22, 94],
+    popupAnchor: [-3, -76],
+  });
+  const floodMarker = new L.Icon({
+    iconUrl: './flood-icon-2x.png',
+    iconSize: [38, 38],
+    iconAnchor: [22, 94],
+    popupAnchor: [-3, -76],
+  });
+  const userMarker = new L.Icon({
+    iconUrl: './user-icon-2x.png',
+    iconSize: [38, 38],
     iconAnchor: [22, 94],
     popupAnchor: [-3, -76],
   });
@@ -55,13 +66,29 @@ const MarkerMap = () => {
         'http://localhost:4000/proximityzone'
       );
       const proximityData = await proximityResponse.json();
+
+      console.log('connected proximity zone', connectedProximityZone);
       setProximityzone(proximityData);
       setEvacuationZoneData(data);
-      // console.log(data);
     };
 
     fetchData();
   }, []);
+
+  useEffect(() => {
+    const fetchFloodZones = async () => {
+      if (connectedProximityZone) {
+        const response = await fetch(
+          `http://localhost:4000/floodzone/${connectedProximityZone._id}`
+        );
+        const data = await response.json();
+        console.log('Flood zones data', data);
+        setFloodZones(data);
+      }
+    };
+
+    fetchFloodZones();
+  }, [connectedProximityZone]);
 
   useEffect(() => {
     const findClosestProximityZone = () => {
@@ -89,10 +116,11 @@ const MarkerMap = () => {
         console.error('Failed:', error);
       }
     };
+
     findClosestProximityZone();
   }, [evacuationZonesData]);
 
-  const LoactionMaker = () => {
+  const LocationMarker = () => {
     const map = useMap({});
 
     useEffect(() => {
@@ -101,7 +129,6 @@ const MarkerMap = () => {
 
       const flyToLocation = () => {
         if (map) {
-          // console.log('user', user);
           map.flyTo([user.latitude, user.longitude], 13, {
             animate: true,
             duration: 3,
@@ -115,15 +142,7 @@ const MarkerMap = () => {
       flyToLocation();
     }, [map, user]);
 
-    // const handleClickInteraction = (e) => {
-    //   console.log('clicked on ', e.latlng);
-    // };
-
-    // map.on('click', handleClickInteraction);
-
-    // return () => {
-    //   map.off('click', handleClickInteraction);
-    // };
+    return null;
   };
 
   return (
@@ -139,15 +158,13 @@ const MarkerMap = () => {
         />
 
         {evacuationZonesData.map((marker, index) => (
-          <>
+          <React.Fragment key={index}>
             <Circle
               center={{ lat: marker.latitude, lng: marker.longitude }}
               pathOptions={{ color: 'green' }}
               radius={600}
             />
-            <Marker position={[latitude, longitude]} icon={markerIcon}></Marker>
             <Marker
-              key={index}
               position={[marker.latitude, marker.longitude]}
               icon={safeZoneMarker}
             >
@@ -159,18 +176,17 @@ const MarkerMap = () => {
                 </div>
               </Popup>
             </Marker>
-          </>
+          </React.Fragment>
         ))}
+
         {proximityzone.map((marker, index) => (
-          <>
+          <React.Fragment key={index}>
             <Circle
               center={{ lat: marker.latitude, lng: marker.longitude }}
               pathOptions={{ color: '#66b3ff' }}
               radius={marker.radius * 1000}
             />
-            <Marker position={[latitude, longitude]} icon={markerIcon}></Marker>
             <Marker
-              key={index}
               position={[marker.latitude, marker.longitude]}
               icon={proximityZoneMarker}
             >
@@ -181,9 +197,41 @@ const MarkerMap = () => {
                 </div>
               </Popup>
             </Marker>
-          </>
+          </React.Fragment>
         ))}
-        <LoactionMaker />
+
+        {floodZones.map((marker, index) => (
+          <React.Fragment key={index}>
+            <Circle
+              center={{ lat: marker.latitude, lng: marker.longitude }}
+              pathOptions={{ color: 'red' }}
+              radius={marker.radius}
+            />
+            <Marker
+              position={[marker.latitude, marker.longitude]}
+              icon={floodMarker}
+            >
+              <Popup>
+                <div>
+                  <h2>Flood Zone</h2>
+                  <p>Radius Covered - {marker.radius} meters</p>
+                </div>
+              </Popup>
+            </Marker>
+          </React.Fragment>
+        ))}
+
+        <Marker position={[latitude, longitude]} icon={userMarker}>
+          <Popup>
+            <div>
+              <h2>Your Location</h2>
+              <p>Latitude - {latitude}</p>
+              <p>Longitude - {longitude}</p>
+            </div>
+          </Popup>
+        </Marker>
+
+        <LocationMarker />
       </MapContainer>
     </>
   );

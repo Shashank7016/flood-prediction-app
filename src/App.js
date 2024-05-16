@@ -17,6 +17,7 @@ import UsersPage from './components/UsersPage';
 import Home from './components/HomePage';
 import EvacuationComponent from './components/Evacuation';
 import ProximityZone from './components/ProximityZone';
+import FloodZone from './components/FloodZone';
 
 function App() {
   return (
@@ -34,6 +35,7 @@ function App() {
         <Route path='/users' element={<UsersPage />} />
         <Route path='/evacuation' element={<EvacuationComponent />} />
         <Route path='/proximityzone' element={<ProximityZone />} />
+        <Route path='/floodzone' element={<FloodZone />} />
         {/* Other routes as needed */}
       </Routes>
     </AuthProvider>
