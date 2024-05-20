@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Typography } from 'antd';
 import AlertList from '../AlertList';
 import MarkerMap from '../Evacuation/Map';
+import ActiveStatus from '../ActiveStatus';
 import { useAuth } from '../../contexts/AuthContext';
 import EvacuationProcess from '../EvacuationProcess';
 
@@ -46,7 +47,8 @@ export default function HomePage() {
     <div style={{ margin: '0 auto', width: '80%', marginTop: '30px' }}>
       <Title level={3}>Welcome to Flood Management System</Title>
       <Title level={4} style={{ textAlign: 'right' }}>
-        Connected Proximity Zone: {connectedProximityZone?.zoneName}
+        Connected Proximity Zone: {connectedProximityZone?.zoneName}{' '}
+        <ActiveStatus />
       </Title>
       <EvacuationProcess visible={evacuationProcessStarted} />
       <MarkerMap />

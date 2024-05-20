@@ -78,13 +78,15 @@ const EvacuationProcess = ({ visible }) => {
 
   return (
     <div>
-      <Button
-        type='primary'
-        onClick={showModal}
-        style={{ marginTop: '20px', marginBottom: '20px' }}
-      >
-        Check Warning Status
-      </Button>
+      {visible && (
+        <Button
+          type='primary'
+          onClick={showModal}
+          style={{ marginTop: '20px', marginBottom: '20px' }}
+        >
+          Check Warning Status
+        </Button>
+      )}
       <Modal
         title='Evacuation  Process has been started'
         visible={isModalVisible}

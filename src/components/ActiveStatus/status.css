@@ -1,0 +1,7 @@
+.active-status {
+  width: 16px;
+  height: 16px;
+  background-color: rgb(110, 237, 110);
+  border-radius: 50%;
+  display: inline-block;
+}
