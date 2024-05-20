@@ -1,70 +1,126 @@
-# Getting Started with Create React App
+# Flood Management Software Frontend
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This project is the frontend application for the Flood Management Software, built using React. It provides an interface for flood prediction, alert systems, user management, and various flood-related functionalities.
 
-## Available Scripts
+## Features
 
-In the project directory, you can run:
+- **Flood Prediction**
+  - Provides flood risk predictions based on user inputs.
+- **Alert Systems**
+  - Sends alerts and notifications to users about potential flood risks.
+- **User Management**
+  - Allows users to register, login, and manage their profiles.
+  - Admin account creation and management.
+- **Login and Registration**
+  - Secure user authentication and authorization.
+- **Evacuation Planning**
+  - Offers evacuation plans and routes in case of flood emergencies.
+- **Flood Zones Creation**
+  - Creation and management of different flood zones:
+    - **Evacuation Zone**: Areas designated for evacuation during floods.
+    - **Proximity Zone**: Areas near flood-prone regions for monitoring.
 
-### `npm start`
+## Setup Instructions
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### Prerequisites
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+- Node.js
+- npm or yarn
 
-### `npm test`
+### Installation
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+1. **Clone the repository**
 
-### `npm run build`
+   ```sh
+   git clone https://github.com/yourusername/flood-management-frontend.git
+   cd flood-management-frontend
+   ```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+2. **Install dependencies**
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+   ```sh
+   npm install
+   # or
+   yarn install
+   ```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+3. **Create a `.env` file**
 
-### `npm run eject`
+   ```sh
+   REACT_APP_API_URL=http://127.0.0.1:5000
+   ```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+4. **Run the application**
+   ```sh
+   npm start
+   # or
+   yarn start
+   ```
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+The application will start at `http://localhost:3000/`.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## Project Structure
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+```
+flood-management-frontend/
+├── public/
+│   ├── index.html
+│   └── ...
+├── src/
+│   ├── components/
+│   │   ├── AlertList/
+│   │   ├── EvacuationProcess/
+│   │   ├── FloodPrediction/
+│   │   ├── FloodZones/
+│   │   ├── DataPage/
+│   │   ├── AnalysisPage/
+│   │   ├── UserManagement/
+│   │   ├── Login/
+│   │   ├── Register/
+│   │   └── ...
+│   ├── context/
+│   │   ├── AuthContext/
+│   │   └── ...
+│   ├── utils/
+│   ├── App.js
+│   ├── index.js
+│   └── ...
+├── .env
+├── package.json
+└── ...
+```
 
-## Learn More
+## Key Components
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+- **FloodPrediction**
+  - Component for users to input data and receive flood risk predictions.
+- **Alerts**
+  - Displays alerts and notifications about potential floods.
+- **UserManagement**
+  - Components for user registration, login, and profile management.
+- **EvacuationPlanning**
+  - Tools and maps for planning evacuation routes.
+- **FloodZones**
+  - Interfaces for creating and managing evacuation and proximity zones.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## API Endpoints
 
-### Code Splitting
+The frontend communicates with the backend using the following API endpoints:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+- **GET `/logistic_regression`**
+- **POST `/logistic_regression`**
+- **GET `/decision_tree`**
+- **POST `/decision_tree`**
+- **GET `/svm`**
+- **POST `/svm`**
+- **User Authentication and Management Endpoints**
+- **Flood Alerts and Notifications Endpoints**
+- **Evacuation Planning and Zones Management Endpoints**
 
-### Analyzing the Bundle Size
+## Contributing
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+Please fork the repository and submit pull requests for any enhancements or bug fixes.
 
-### Making a Progressive Web App
+## License
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+This project is licensed under the MIT License. See the LICENSE file for details.
